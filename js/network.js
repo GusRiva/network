@@ -1,12 +1,13 @@
+
+var initial_node = 2
+
 function filterLinks(node, all_links){
     var filtered_links = all_links.filter(function(link){
-            return link['source']['id'] == 2 || link['target']['id'] == 2;
+            return link['source'] == node['id'] || link['target'] == node['id'];
         });
    return filtered_links;
+   
 };
-
-
-
 
 
 $(document).ready(function() {
@@ -28,25 +29,47 @@ $(document).ready(function() {
 
     
     d3.json("data/test_data.json", function(json) {
-        force
+        
+/*        force
             .nodes(json.nodes)
             .links(json.links)
-            .start();
-        
-        
-/*        Filter the nodes in the data*/
+            .start();*/
+          /*        Filter the nodes in the data*/
+        console.log(json)
         var filtered_nodes = json.nodes.filter(function(node){
-            return node['id'] == 2;
+            return node['id'] == initial_node;
         });
         
+        filtered_nodes = json.nodes
+        filtered_links = json.links /*  Change to json.links for all links      */
+        
+        
+        
+          force
+            .nodes(filtered_nodes)
+            .links(filtered_links)
+            .start();
+
+        
+        
+        link = svg.selectAll(".link")
+/*            .data(json.links)*/
+            .data(filtered_links)
+          .enter().append("line")
+            .attr("class", "link")
+          .style("stroke-width", function(d) { return Math.sqrt(d.weight); });    
+
+        
               
-        var node = svg.selectAll(".node")
-            /*.data(filtered_nodes)*/
-            .data(json.nodes)
+        node = svg.selectAll(".node")
+/*            .data(json.nodes)*/
+            .data(filtered_nodes)
           .enter().append("g") /* Enter only the selected element*/
             .attr("class", "node")
             .call(force.drag)
-            
+        
+      
+      
           node.append("circle")
             .attr("r","5");
       
@@ -56,49 +79,70 @@ $(document).ready(function() {
             .text(function(d) { return d.name });
       
       
-        filtered_links = [] /*  Change to json.links for all links      */
-        var link = svg.selectAll(".link")
-      /*      .data(filtered_links)*/
-            .data(json.links)
-          .enter().append("line")
-            .attr("class", "link")
-          .style("stroke-width", function(d) { return Math.sqrt(d.weight); });
         
       
       
-      
-      
-        force.on("tick", function() {
-          link.attr("x1", function(d) { return d.source.x; })
+        force.on("tick", function() {    
+/*            draw_nodes_links(node, link);*/
+          link.attr("x1", function(d) { return d.source.x; }) /* Link position*/
               .attr("y1", function(d) { return d.source.y; })
               .attr("x2", function(d) { return d.target.x; })
               .attr("y2", function(d) { return d.target.y; });
       
-          node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }); /* Node position*/
        });
        
        
+       node.on("click", function(clicked_node) {
+            filtered_links= filterLinks(clicked_node,json.links);
+                
+            connected_nodes_ids = new Set([]);
+            for (lk in filtered_links){
+               connected_nodes_ids.add(filtered_links[lk]['source']);
+               connected_nodes_ids.add(filtered_links[lk]['target']);
+            };
+                                
+            connected_nodes_ids = Array.from(connected_nodes_ids)
+               
+            filtered_nodes = json.nodes.filter(function(node){
+               return connected_nodes_ids.includes(node['id']);
+            });
+            
+            node.data(filtered_nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(force.drag)
+       });
        
-       node.on("click", function(clicked_node) { /*Click Function*/
+       
+    /*   node.on("click", function(clicked_node) { /\*Click Function*\/
                 filtered_links= filterLinks(clicked_node,json.links);
+                
                 connected_nodes_ids = new Set([]);
                 for (lk in filtered_links){
-                    connected_nodes_ids.add(filtered_links[lk]['source']['id']);
-                    connected_nodes_ids.add(filtered_links[lk]['target']['id']);
+                    connected_nodes_ids.add(filtered_links[lk]['source']);
+                    connected_nodes_ids.add(filtered_links[lk]['target']);
                 };
                                 
                connected_nodes_ids = Array.from(connected_nodes_ids)
                
-               /*        Filter the nodes in the data*/
+               /\*        Filter the nodes in the data*\/
                 filtered_nodes = json.nodes.filter(function(node){
-                    console.log(connected_nodes_ids,node['id'] )
                     return connected_nodes_ids.includes(node['id']);
                 });
-                console.log(filtered_nodes)
+          
+            
+            
+          
+             force
+                .nodes(filtered_nodes)
+                .links(filtered_links)
+                .start();
+                
                
                var node = svg.selectAll(".node")
                    .data(filtered_nodes)
-                    .enter().append("g") /* Enter only the selected element*/
+                    .enter().append("g") /\* Enter only the selected element*\/
                     .attr("class", "node")
                     .call(force.drag)
             
@@ -119,8 +163,10 @@ $(document).ready(function() {
                         .attr("y1", function(d) { return d.source.y; })
                         .attr("x2", function(d) { return d.target.x; })
                         .attr("y2", function(d) { return d.target.y; });
+                        
+                   node.attr("transform", function(d) { console.log(d.x,d.y); return "translate(" + d.x + "," + d.y + ")"; }); /\* Node position*\/
                 
-            });
+            });*/
   });
   
 });
