@@ -1,0 +1,13 @@
+
+body {
+    margin: 25px;
+}
+
+#main_title {
+    text-align:center;
+}
+
+
+.link {
+  stroke: #aaa;
+}
