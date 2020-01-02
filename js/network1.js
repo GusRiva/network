@@ -44,8 +44,8 @@ $(document).ready(function() {
     };*/
 
     
-/*    nodes = all_nodes.filter(function(node){return node['id'] === initial_node});*/
-    var nodes = [{id:"2",Name:"B"}]
+    nodes = all_nodes.filter(function(node){return node['id'] === initial_node});
+/*    var nodes = [{id:"2",Name:"B"}]*/
     var links = []
     
     var simulation = d3.forceSimulation(nodes)
@@ -69,7 +69,7 @@ $(document).ready(function() {
             return lk['source'] === String(clicked_node['id']) || lk['target'] === String(clicked_node['id'])
         });
         
-        console.log(filtered_links)
+        
         
         var filtered_nodes_ids = new Set([]);
            for (lk in filtered_links){
@@ -89,12 +89,19 @@ $(document).ready(function() {
          for (nd in filtered_nodes){
              nodes.push(filtered_nodes[nd]);
          };
-                
         
-        /*for (lk in filtered_links){
-              links.push(filtered_links[lk])    
-          };
-        */
+        console.log("nodes",nodes)
+        console.log("Filtered links",filtered_links)
+        /*for (i = 0; i < 2; i++){
+           links.push({source: filtered_links[i]["source"], target: filtered_links[i]["target"], weight: "1"})
+        };*/
+        links.push({source:"2", target:"0"})
+        
+     /*   for (lk in filtered_links){
+             console.log(filtered_links[lk])
+             links.push(filtered_links[lk])    
+          };*/
+        
         
         
         
