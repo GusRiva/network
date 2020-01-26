@@ -46,8 +46,8 @@ var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 3, height / 3));
+    .force("charge", d3.forceManyBody().strength(-400))
+    .force("center", d3.forceCenter(width / 2, height / 2));
 
 // d3.json(data_array, function(error, graph) {
 
@@ -94,7 +94,7 @@ var simulation = d3.forceSimulation()
 
   node.on("click", function(clicked_node) {
     $("#my_dataviz").empty();
-    $("#my_dataviz").append("<svg width='960' height='600'></svg>");
+    $("#my_dataviz").append("<svg width='1200' height='1200'></svg>");
     
     clicked_node_id = JSON.parse(JSON.stringify(clicked_node.id));
     
