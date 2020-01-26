@@ -1,5 +1,6 @@
 
-var initial_node = ["Isabeau"];
+var visible_nodes = ["Isabeau"];
+var visible_links = []
 var data_array = [];
 var filtered_data = {'nodes':[], "links":[]};
 
@@ -10,13 +11,27 @@ $.getJSON("data/test_data1.json", function(data){
 
 $(document).ready(function() {
     for (node in data_array['nodes']){
-      if ( initial_node.indexOf(data_array['nodes'][node]['id']) >= 0 ){
+      if ( visible_nodes.indexOf(data_array['nodes'][node]['id']) >= 0 ){
           filtered_data['nodes'].push(data_array['nodes'][node]);
         };
     };    
 
   activate(filtered_data);
 
+  setInterval(function(){
+    if ($("svg").children().length === 0){
+      for (nd in data_array['nodes']){
+      if ( visible_nodes.indexOf(data_array['nodes'][nd]['id']) >= 0 ){
+          filtered_data['nodes'].push(data_array['nodes'][nd]);
+        };
+    };    
+      for (lk in visible_links){
+        filtered_data['links'].push(visible_links[lk])
+    };    
+      activate(filtered_data)
+    }
+  }
+    , 2000);
 
     
 });
@@ -25,14 +40,14 @@ $(document).ready(function() {
 function activate(data_act){
 svg = d3.select("svg");
 width="1200"
-height="1000"
+height="1200"
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
     .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
+    .force("center", d3.forceCenter(width / 3, height / 3));
 
 // d3.json(data_array, function(error, graph) {
 
@@ -52,7 +67,7 @@ var simulation = d3.forceSimulation()
     .enter().append("g")
     
   var circles = node.append("circle")
-      .attr("r", 5)
+      .attr("r", 10)
       .attr("fill", function(d) { return color(d.group); })
       // .call(d3.drag()
       //     .on("start", dragstarted)
@@ -64,7 +79,7 @@ var simulation = d3.forceSimulation()
       .text(function(d) {
         return d.id;
       })
-      .attr('x', 6)
+      .attr('x', 10)
       .attr('y', 3);
 
   node.append("title")
@@ -80,19 +95,17 @@ var simulation = d3.forceSimulation()
   node.on("click", function(clicked_node) {
     $("#my_dataviz").empty();
     $("#my_dataviz").append("<svg width='960' height='600'></svg>");
+    
     clicked_node_id = JSON.parse(JSON.stringify(clicked_node.id));
+    
+    visible_nodes.push(clicked_node_id);
+
     filtered_data = {'nodes':[], "links":[]};
 
-    for (lk in data_array['links']){
-      
-      if ( clicked_node_id.indexOf(data_array['links'][lk]['source']) >= 0 ){
-        
-        console.log(data_array['links'][lk])
-    }
-    }
+    get_connections(clicked_node_id);
 
     
-    activate(filtered_data);
+    
 
   });
 
@@ -108,9 +121,24 @@ var simulation = d3.forceSimulation()
           return "translate(" + d.x + "," + d.y + ")";
         })
   }
-// });
+
+  function get_connections(startNode){
+    for (lk in data_array['links']){
+      if ( startNode.indexOf(data_array['links'][lk]['source']) >= 0 ){
+        visible_links.push(data_array['links'][lk])
+        visible_nodes.push(data_array['links'][lk]['target'])
+    } else if ( startNode.indexOf(data_array['links'][lk]['target']) >= 0 ){
+        visible_links.push(data_array['links'][lk])
+        visible_nodes.push(data_array['links'][lk]['source'])
+      }
+    }
+    visible_nodes = unique(visible_nodes)
+    
+  }
 
 };
+
+
 
 
 
@@ -129,4 +157,12 @@ function dragended(d) {
   if (!d3.event.active) simulation.alphaTarget(0);
   d.fx = null;
   d.fy = null;
+}
+
+function unique(list) {
+  var result = [];
+  $.each(list, function(i, e) {
+    if ($.inArray(e, result) == -1) result.push(e);
+  });
+  return result;
 }
