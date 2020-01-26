@@ -1,8 +1,9 @@
 var all_nodes; 
 var all_links;
+
+data_source = "data/test_data.json"
     
 $.getJSON("data/test_data.json", function(json){
-/*    $.getJSON("data/hsc_d3_data.json", function(json){*/
     all_links = json['links'];
     all_nodes = json['nodes'];
     console.log(all_nodes,all_links)
