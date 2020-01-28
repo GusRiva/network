@@ -1,55 +1,75 @@
 
-var visible_nodes = ["Isabeau"];
+var visible_nodes = ["h5006"];
 var visible_links = []
 var data_array = [];
 var filtered_data = {'nodes':[], "links":[]};
 
-$.getJSON("data/test_data1.json", function(data){
-  data_array = data
-});
+
+$.getJSON("data/hsc_d3_data2.json", function(data){
+    data_array = data
+  });
+
 
 
 $(document).ready(function() {
-    for (node in data_array['nodes']){
-      if ( visible_nodes.indexOf(data_array['nodes'][node]['id']) >= 0 ){
+  
+  function load_data(){
+    if (data_array.length == 0){
+      console.log("Empty");
+      $("#messages").text("Loading...");
+      setTimeout(function(){load_data()}, 2000);
+    }
+    else {
+      $("#messages").text("Click on a node to expand to connections");
+      console.log("Full");
+
+      for (node in data_array['nodes']){
+
+        if ( visible_nodes.indexOf(data_array['nodes'][node]['id']) >= 0 ){
           filtered_data['nodes'].push(data_array['nodes'][node]);
         };
-    };    
+      };    
 
-  activate(filtered_data);
+      activate(filtered_data);
 
-  setInterval(function(){
-    if ($("svg").children().length === 0){
-      for (nd in data_array['nodes']){
-      if ( visible_nodes.indexOf(data_array['nodes'][nd]['id']) >= 0 ){
-          filtered_data['nodes'].push(data_array['nodes'][nd]);
-        };
-    };    
-      for (lk in visible_links){
-        filtered_data['links'].push(visible_links[lk])
-    };    
-      activate(filtered_data)
+      setInterval(function(){
+        if ($("svg").children().length === 0){
+          for (nd in data_array['nodes']){
+          if ( visible_nodes.indexOf(data_array['nodes'][nd]['id']) >= 0 ){
+              filtered_data['nodes'].push(data_array['nodes'][nd]);
+            };
+        };    
+          for (lk in visible_links){
+            filtered_data['links'].push(visible_links[lk])
+        };    
+          activate(filtered_data)
+        }
+      }
+        , 2000);
     }
   }
-    , 2000);
+  
+  load_data()
+
 
     
 });
 
 
 function activate(data_act){
-svg = d3.select("svg");
-width="1200"
-height="1200"
+  svg = d3.select("svg");
+  width="960"
+  height="780"
 
-var color = d3.scaleOrdinal(d3.schemeCategory20);
+  // var color = d3.scaleOrdinal(d3.schemeCategory20b);
+  var color = d3.scaleOrdinal().range(["#009933", "#990099"]);
 
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody().strength(-400))
-    .force("center", d3.forceCenter(width / 2, height / 2));
+  var simulation = d3.forceSimulation()
+      .force("link", d3.forceLink().id(function(d) { return d.id; }))
+      .force("charge", d3.forceManyBody().strength(-400))
+      .force("center", d3.forceCenter(width / 2, height / 2));
 
-// d3.json(data_array, function(error, graph) {
+  // d3.json(data_array, function(error, graph) {
 
   // if (error) throw error;
 
@@ -67,7 +87,7 @@ var simulation = d3.forceSimulation()
     .enter().append("g")
     
   var circles = node.append("circle")
-      .attr("r", 10)
+      .attr("r", 7)
       .attr("fill", function(d) { return color(d.group); })
       // .call(d3.drag()
       //     .on("start", dragstarted)
@@ -79,7 +99,7 @@ var simulation = d3.forceSimulation()
       .text(function(d) {
         return d.id;
       })
-      .attr('x', 10)
+      .attr('x', 8)
       .attr('y', 3);
 
   node.append("title")

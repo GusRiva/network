@@ -14,20 +14,24 @@ for item in data:
             all_manuscripts.add(ms)
 
 for index, manuscript in enumerate(all_manuscripts):
-    result_json['nodes'].append({'id': 'h'+ str(index), 'name': manuscript})
+    result_json['nodes'].append({'id': 'h'+ str(index), 'label': manuscript, 'group': 'h'})
 
 for item in data:
     work_id = item
     title = data[item]['title']
 
-    result_json['nodes'].append({'id': 'w' + str(work_id), 'name': title})
-    if 'manuscripts' in data[item]:
-        manuscripts = data[item]['manuscripts']
-        for ms in manuscripts:
-            # Confused
+    result_json['nodes'].append({'id': 'w' + str(work_id), 'label': title, 'group': 'w'})
 
-    result_json['links'].append({'source': 'w'+ str(work_id), 'target': 2})
+    # links
+    # if 'manuscripts' in data[item]:
+    #     manuscripts = data[item]['manuscripts']
+    #     for ms in manuscripts:
+    #         # Confused
+    #
+    # result_json['links'].append({'source': 'w'+ str(work_id), 'target': 2})
 
-with codecs.open('hsc_d3_data.json', 'w', 'utf-8') as outfile:
-    json.dump(result_json,outfile)
+with codecs.open('hsc_d3_data3.json', 'w', 'utf-8') as outfile:
+    json.dump(result_json,outfile, indent=2)
+
+
 
