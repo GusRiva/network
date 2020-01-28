@@ -1,11 +1,12 @@
 
-var visible_nodes = ["h5006"];
+var visible_nodes = ["Joly"];
 var visible_links = []
 var data_array = [];
 var filtered_data = {'nodes':[], "links":[]};
 
+var drag_enabled = false;
 
-$.getJSON("data/hsc_d3_data2.json", function(data){
+$.getJSON("data/test_data1.json", function(data){
     data_array = data
   });
 
@@ -42,6 +43,7 @@ $(document).ready(function() {
           for (lk in visible_links){
             filtered_data['links'].push(visible_links[lk])
         };    
+
           activate(filtered_data)
         }
       }
@@ -52,11 +54,21 @@ $(document).ready(function() {
   load_data()
 
 
+  $("input").on( "click", function() {
+    if ($("input:checked").attr("id") === "drag_enabler"){
+      console.log("Drag");
+      drag_enabled = true;
+    } else if ($("input:checked").attr("id") === "expand_enabler") {
+      console.log("Click");
+      drag_enabled = false;
+    }
+  });
     
 });
 
 
 function activate(data_act){
+  console.log(data_act)
   svg = d3.select("svg");
   width="960"
   height="780"
@@ -89,15 +101,16 @@ function activate(data_act){
   var circles = node.append("circle")
       .attr("r", 7)
       .attr("fill", function(d) { return color(d.group); })
-      // .call(d3.drag()
-      //     .on("start", dragstarted)
-      //     .on("drag", dragged)
-      //     .on("end", dragended))
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended)
+      )
       ;
 
   var lables = node.append("text")
       .text(function(d) {
-        return d.id;
+        return d.label;
       })
       .attr('x', 8)
       .attr('y', 3);
@@ -113,18 +126,19 @@ function activate(data_act){
       .links(data_act.links);
 
   node.on("click", function(clicked_node) {
-    $("#my_dataviz").empty();
-    $("#my_dataviz").append("<svg width='1200' height='1200'></svg>");
-    
-    clicked_node_id = JSON.parse(JSON.stringify(clicked_node.id));
-    
-    visible_nodes.push(clicked_node_id);
+    if (drag_enabled == false){
+      $("#my_dataviz").empty();
+      $("#my_dataviz").append("<svg width='1200' height='1200'></svg>");
+      
+      clicked_node_id = JSON.parse(JSON.stringify(clicked_node.id));
+      
+      visible_nodes.push(clicked_node_id);
 
-    filtered_data = {'nodes':[], "links":[]};
+      filtered_data = {'nodes':[], "links":[]};
 
-    get_connections(clicked_node_id);
+      get_connections(clicked_node_id);
 
-    
+    }
     
 
   });
@@ -156,28 +170,39 @@ function activate(data_act){
     
   }
 
+
+function dragstarted(d) {
+
+  if (drag_enabled == true){
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+}
+
+function dragged(d) {
+    if (drag_enabled == true){
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;  
+  }
+}
+
+function dragended(d) {
+    if (drag_enabled == true){
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null; 
+  }
+}
+
+
+
 };
 
 
 
 
 
-function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
-}
-
-function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-}
-
-function dragended(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
-}
 
 function unique(list) {
   var result = [];
