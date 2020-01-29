@@ -20,6 +20,8 @@ for index in range(2010,2015):
 	if len(ms) > 0:
 		final_dict[index] = ms[0].text.rstrip()
 
+
+
 		# In td id="inhalt" get the href, and only the number. Create the links at the same time
 
 		# work = work[0].text
