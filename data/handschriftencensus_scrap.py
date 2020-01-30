@@ -1,24 +1,32 @@
 import requests
 from lxml import html
 from bs4 import BeautifulSoup
-import pandas as pd
 import json
 import codecs
+import re
 
 
 #In this variable I will store the information as a dictionary with this structure:
 # {number : "Name"}
-final_dict = {}
+ms_dict = {}
 
-for index in range(2010,2015):
+links_dict = {"links" : []}
+
+for index in range(1,27000):
 	print(index)
 	page = requests.get('http://www.handschriftencensus.de/'+ str(index))
 	c = page.content
 	soup = BeautifulSoup(c, "lxml")
 
-	ms = soup.find_all("th", class_="ort")
-	if len(ms) > 0:
-		final_dict[index] = ms[0].text.rstrip()
+	ms_label = soup.find_all("th", class_="ort")
+	if len(ms_label) > 0:
+		ms_label = ms_label[0].text.rstrip()
+		ms_dict[ "h" + str(index)] = ms_label
+
+		inhalt = soup.find_all("a", class_="aw")
+		for el in inhalt:
+			work_id = re.findall('/\d+$', el['href'])[0][1:]
+			links_dict['links'].append( { "source": "h" + str(index), "target": "w" + work_id } )
 
 
 
@@ -43,7 +51,10 @@ for index in range(2010,2015):
 
 #Save data as json
 with codecs.open('manuscripts_ids.json', 'w', 'utf-8') as outfile:
-    json.dump(final_dict,outfile, indent=2)
+    json.dump(ms_dict,outfile, indent=2)
+
+with codecs.open('links.json', 'w', 'utf-8') as outfile:
+    json.dump(links_dict,outfile, indent=2)
 
 #To save the data as a csv
 # table = pd.DataFrame.from_dict(final_dict, orient='index')
