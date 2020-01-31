@@ -1,5 +1,5 @@
 
-var visible_nodes = ["Joly"];
+var visible_nodes = ["w150"];
 var visible_links = []
 var data_array = [];
 var filtered_data = {'nodes':[], "links":[]};
@@ -7,13 +7,16 @@ var filtered_data = {'nodes':[], "links":[]};
 var drag_enabled = false;
 
 
-$.getJSON("data/test_data1.json", function(data){
-    data_array = data
-  });
 
+// h1562 problem
 
 
 $(document).ready(function() {
+
+$.getJSON("data/hsc_d3_data_final.json", function(data){
+    data_array = data
+    console.log(data)
+  });
   
   function load_data(){
     if (data_array.length == 0){
@@ -158,11 +161,13 @@ function activate(data_act){
   }
 
   function get_connections(startNode){
+
     for (lk in data_array['links']){
-      if ( startNode.indexOf(data_array['links'][lk]['source']) >= 0 ){
+      if ( startNode === data_array['links'][lk]['source']) {
         visible_links.push(data_array['links'][lk])
         visible_nodes.push(data_array['links'][lk]['target'])
-    } else if ( startNode.indexOf(data_array['links'][lk]['target']) >= 0 ){
+    } else if ( startNode === data_array['links'][lk]['target']){
+
         visible_links.push(data_array['links'][lk])
         visible_nodes.push(data_array['links'][lk]['source'])
       }
