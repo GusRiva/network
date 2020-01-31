@@ -22,6 +22,7 @@ for item in data:
 
     result_json['nodes'].append({'id': 'w' + str(work_id), 'label': title, 'group': 'w'})
 
+
     # links
     # if 'manuscripts' in data[item]:
     #     manuscripts = data[item]['manuscripts']
@@ -30,7 +31,7 @@ for item in data:
     #
     # result_json['links'].append({'source': 'w'+ str(work_id), 'target': 2})
 
-with codecs.open('hsc_d3_data3.json', 'w', 'utf-8') as outfile:
+with codecs.open('hsc_d3_data4.json', 'w', 'utf-8') as outfile:
     json.dump(result_json,outfile, indent=2)
 
 

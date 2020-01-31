@@ -6,6 +6,7 @@ var filtered_data = {'nodes':[], "links":[]};
 
 var drag_enabled = false;
 
+
 $.getJSON("data/test_data1.json", function(data){
     data_array = data
   });
