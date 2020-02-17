@@ -69,7 +69,7 @@ function activate(data_act){
 
   var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id; }))
-      .force("charge", d3.forceManyBody().strength(-400))
+      .force("charge", d3.forceManyBody().strength(-300).distanceMax(400).distanceMin(60))
       .force("center", d3.forceCenter(width / 2, height / 2));
 
 
