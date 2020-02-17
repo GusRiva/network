@@ -10,7 +10,10 @@ for work in data['nodes']:
     group = work['group']
     if group == 'w':
         if ":" in work['label']:
-            author:
+            author = work['label'].split(':')[0]
+            result_json['nodes'].append({'id': work['id'], 'label': work['label'], 'group': work['group'], 'author': author})
+        else:
+            result_json['nodes'].append({'id': work['id'], 'label': work['label'], 'group': work['group'], 'author': 'anonym'})
     else:
         result_json['nodes'].append(work)
 
